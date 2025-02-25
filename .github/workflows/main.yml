@@ -1,0 +1,28 @@
+name: Test GitHub Action with Self-hosted Runner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-job:
+    runs-on: [self-hosted, linux]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Set up node (or any other tool if needed)
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+        
+      - name: Build Static Website
+        run: |
+          echo "Building static site..."
+          # Here you can add commands to build or do something with the page, if necessary.
+          
+      - name: Serve HTML file
+        run: |
+          python3 -m http.server 8080
+        continue-on-error: true  # this will allow the server to run in the background for testing
