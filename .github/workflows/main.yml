@@ -3,24 +3,39 @@ name: Test Self-hosted Runner
 on:
   push:
     branches:
-      - main
+      - main  # Trigger this workflow on push to the main branch
 
 jobs:
   test:
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, linux]  # Use a self-hosted Linux runner
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Checkout the code from your repository
 
       - name: Run HTTP Server in the Background
         run: |
-          nohup python3 -m http.server 8080 &
-          echo "HTTP server started in the background"
-      
-      - name: Wait for the server to run for a while
-        run: sleep 30  # Sleep for 30 seconds to let the server run
-      
+          nohup python3 -m http.server 8080 &  # Start HTTP server in the background
+          echo "HTTP server started in the background on port 8080"
+        
+      - name: Wait for the server to run
+        run: |
+          echo "Waiting for the server to be ready..."
+          sleep 30  # Wait for 30 seconds to allow the server to initialize
+
+      - name: Check if HTTP Server is Running
+        run: |
+          echo "Checking if the HTTP server is running..."
+          curl -I http://localhost:8080 || echo "Server is not running"  # Check server status
+
       - name: Additional Steps
         run: |
-          echo "Additional steps after HTTP server runs"
+          echo "Server is running, now performing additional steps"
+          # You can add any additional commands here
+          # For example, you could upload the index.html as an artifact, or run tests
+
+      - name: Upload HTML File as Artifact
+        uses: actions/upload-artifact@v3  # Upload an artifact after server runs
+        with:
+          name: html-file
+          path: index.html  # The path to your HTML file in the repository
